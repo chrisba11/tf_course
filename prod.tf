@@ -103,6 +103,6 @@ module "web_app" {
   web_max_size         = var.web_max_size
   web_min_size         = var.web_min_size
   subnets              = [aws_default_subnet.default_az_a.id, aws_default_subnet.default_az_b.id]
-  security_groups      = [aws_security_group.prod_web]
+  security_groups      = [aws_security_group.prod_web.id]
   web_app              = "prod"
 }
