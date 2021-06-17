@@ -1,3 +1,28 @@
+variable "whitelist" {
+  type = list(string)
+}
+variable "web_image_id" {
+  type = string
+}
+variable "web_instance_type" {
+  type = string
+
+}
+variable "web_desired_capacity" {
+  type = number
+
+}
+variable "web_max_size" {
+  type = number
+
+}
+variable "web_min_size" {
+  type = number
+
+}
+
+
+
 provider "aws" {
   profile = "default"
   region  = "us-west-2"
@@ -31,7 +56,7 @@ resource "aws_security_group" "prod_web" {
   description = "Allow standard http and https ports inbound and everything outbound"
 
   ingress = [ {
-    cidr_blocks      = [ "0.0.0.0/0" ]
+    cidr_blocks      = var.whitelist
     description      = "value"
     from_port        = 80
     ipv6_cidr_blocks = []
@@ -42,7 +67,7 @@ resource "aws_security_group" "prod_web" {
     to_port          = 80
     },
     {
-    cidr_blocks      = [ "0.0.0.0/0" ]
+    cidr_blocks      = var.whitelist
     description      = "value"
     from_port        = 443
     ipv6_cidr_blocks = []
@@ -55,7 +80,7 @@ resource "aws_security_group" "prod_web" {
   ]
 
   egress = [ {
-    cidr_blocks      = [ "0.0.0.0/0" ]
+    cidr_blocks      = var.whitelist
     description      = "value"
     from_port        = 0
     ipv6_cidr_blocks = []
@@ -91,8 +116,8 @@ resource "aws_elb" "prod_web" {
 
 resource "aws_launch_template" "prod_web" {
   name_prefix   = "prod-web"  #again, no underscores in these names
-  image_id      = "ami-0235290bfade69c7c"
-  instance_type = "t2.micro"
+  image_id      = var.web_image_id
+  instance_type = var.web_instance_type
     
   tags = {
     "Terraform" : "true"
@@ -100,11 +125,10 @@ resource "aws_launch_template" "prod_web" {
 }
 
 resource "aws_autoscaling_group" "prod_web" {
-  #availability_zones  = ["us-west-2a", "us-west-2b"]
   vpc_zone_identifier = [aws_default_subnet.default_az_a.id, aws_default_subnet.default_az_b.id]
-  desired_capacity    = 1
-  max_size            = 1
-  min_size            = 1
+  desired_capacity    = var.web_desired_capacity
+  max_size            = var.web_max_size
+  min_size            = var.web_min_size
 
   launch_template {
     id      = aws_launch_template.prod_web.id
