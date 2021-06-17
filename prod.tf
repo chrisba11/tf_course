@@ -96,6 +96,7 @@ resource "aws_security_group" "prod_web" {
 module "web_app" {
   source = "./modules/web_app"
   
+  whitelist            = var.whitelist
   web_image_id         = var.web_image_id
   web_instance_type    = var.web_instance_type
   web_desired_capacity = var. web_desired_capacity

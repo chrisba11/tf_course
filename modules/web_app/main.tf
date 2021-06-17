@@ -1,5 +1,5 @@
 resource "aws_elb" "this" {
-  name            = "${web_app}-web"
+  name            = "${var.web_app}-web"
   subnets         = var.subnets
   security_groups = var.security_groups
 
@@ -16,7 +16,7 @@ resource "aws_elb" "this" {
 }
 
 resource "aws_launch_template" "this" {
-  name_prefix   = "${web_app}-web"
+  name_prefix   = "${var.web_app}-web"
   image_id      = var.web_image_id
   instance_type = var.web_instance_type
     
@@ -25,7 +25,7 @@ resource "aws_launch_template" "this" {
   }
 }
 
-resource "aws_autoscaling_group" "prod_web" {
+resource "aws_autoscaling_group" "this" {
   vpc_zone_identifier = var.subnets
   desired_capacity    = var.web_desired_capacity
   max_size            = var.web_max_size
